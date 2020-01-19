@@ -1,0 +1,167 @@
+import React, { FunctionComponent } from 'react'
+import SortableTree, {
+  changeNodeAtPath,
+  removeNodeAtPath,
+  addNodeUnderParent,
+} from 'react-sortable-tree'
+import {
+  Button,
+  Switch,
+  FormGroup,
+  FormControlLabel,
+  makeStyles,
+  createStyles,
+  TextField,
+} from '@material-ui/core'
+import 'react-sortable-tree/style.css'
+
+interface MenuItem {
+  label: string
+  linkURL: string
+  children: MenuItem[]
+  open: boolean
+  expanded: boolean
+}
+
+function createMenuItem(): MenuItem {
+  return {
+    label: '',
+    linkURL: '',
+    children: [],
+    open: false,
+    expanded: true,
+  }
+}
+
+const defaultValue = []
+
+interface TreeInputProps {
+  input: any
+}
+
+const TreeInput: FunctionComponent<TreeInputProps> = ({ input: { value, onChange } }) => {
+  const treeData = value || defaultValue
+
+  const handleChange = value => {
+    onChange(value)
+  }
+
+  const getNodeKey = ({ treeIndex }) => treeIndex
+
+  return (
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => onChange([...treeData, createMenuItem()])}
+      >
+        추가
+      </Button>
+      <div style={{ height: 600 }}>
+        <SortableTree
+          treeData={treeData}
+          onChange={handleChange}
+          rowHeight={170}
+          generateNodeProps={({ node, path }) => ({
+            title: (
+              <div>
+                <TextField
+                  style={{ display: 'block' }}
+                  margin="dense"
+                  value={node.label}
+                  label="메뉴명"
+                  onChange={event => {
+                    const label = event.target.value
+
+                    onChange(
+                      changeNodeAtPath({
+                        treeData,
+                        path,
+                        getNodeKey,
+                        newNode: { ...node, label },
+                      }),
+                    )
+                  }}
+                />
+                <TextField
+                  style={{ display: 'block' }}
+                  margin="dense"
+                  value={node.linkURL}
+                  label="URL"
+                  fullWidth
+                  onChange={event => {
+                    const linkURL = event.target.value
+
+                    onChange(
+                      changeNodeAtPath({
+                        treeData,
+                        path,
+                        getNodeKey,
+                        newNode: { ...node, linkURL },
+                      }),
+                    )
+                  }}
+                />
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={node.open}
+                        value={node.open}
+                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                        onChange={() => {
+                          onChange(
+                            changeNodeAtPath({
+                              treeData,
+                              path,
+                              getNodeKey,
+                              newNode: { ...node, open: !node.open },
+                            }),
+                          )
+                        }}
+                      />
+                    }
+                    label="초기 로드 시 오픈 여부"
+                  />
+                </FormGroup>
+              </div>
+            ),
+            buttons: [
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  onChange(
+                    addNodeUnderParent({
+                      treeData,
+                      parentKey: path[path.length - 1],
+                      getNodeKey,
+                      newNode: createMenuItem(),
+                    }).treeData,
+                  )
+                }
+              >
+                추가
+              </Button>,
+              <Button
+                onClick={() =>
+                  onChange(
+                    removeNodeAtPath({
+                      treeData,
+                      path,
+                      getNodeKey,
+                    }),
+                  )
+                }
+              >
+                삭제
+              </Button>,
+            ],
+          })}
+        />
+      </div>
+    </>
+  )
+}
+
+export default addField(TreeInput)
