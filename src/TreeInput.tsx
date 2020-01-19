@@ -6,9 +6,6 @@ import SortableTree, {
 } from 'react-sortable-tree'
 import {
   Button,
-  Switch,
-  FormGroup,
-  FormControlLabel,
   TextField,
 } from '@material-ui/core'
 import 'react-sortable-tree/style.css'
@@ -30,14 +27,11 @@ function createMenuItem(): MenuItem {
   }
 }
 
-const defaultValue: never[] = []
-
 const TreeInput: FunctionComponent = () => {
   const [treeData, setTreeData] = useState(TreeData)
   
   const handleChange = (treeData: any) => {
     setTreeData(treeData)
-    console.log('treeData', treeData)
   }
 
   const getNodeKey = ({ treeIndex }: any) => treeIndex
