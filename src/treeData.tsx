@@ -4,8 +4,8 @@ import  {
 
 const treeData: TreeItem[] = [
   {
-    title: '`title`',
-    subtitle: '`subtitle`',
+    title: 'title',
+    subtitle: 'subtitle',
     expanded: true,
     children: [
       {
